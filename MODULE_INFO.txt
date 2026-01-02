@@ -1,0 +1,87 @@
+PrestaShop Statistics Module v1.0.0
+====================================
+
+Author: Giuliano De Mar
+License: MIT
+Repository: https://github.com/giulianodemar-netizen/Prestashopstats
+
+DESCRIPTION
+-----------
+Comprehensive statistics module for PrestaShop providing detailed analytics 
+about sales, customers, products, geolocation, and traffic.
+
+FEATURES
+--------
+✓ Sales Statistics
+  - Total orders and revenue tracking
+  - Sales breakdown by product
+  - Sales breakdown by customer
+  - Sales trends by date
+
+✓ Customer Insights
+  - Total active customers
+  - New customer acquisition
+  - Geographic distribution
+  - Purchase frequency analysis
+
+✓ Product Metrics
+  - Most purchased products
+  - Product view tracking
+  - Category performance
+
+✓ Geolocation Data
+  - Orders by country
+  - Traffic by country
+
+✓ Traffic Analytics
+  - Visit tracking
+  - Page view counting
+  - Conversion tracking
+  - Traffic source attribution
+
+✓ Dashboard Integration
+  - Comprehensive statistics dashboard
+  - Date range filtering
+  - Responsive design
+  - Real-time data
+
+COMPATIBILITY
+-------------
+PrestaShop: 1.7.8.0 - 9.x
+PHP: 7.1+
+MySQL: 5.6+
+
+FILES
+-----
+Main module: prestashopstats.php
+Controller: controllers/admin/AdminPrestaShopStatsController.php
+Templates: views/templates/admin/
+Styles: views/css/admin.css
+Scripts: views/js/admin.js
+
+DOCUMENTATION
+-------------
+README.md - Overview and quick start
+INSTALLATION.md - Installation guide
+DOCUMENTATION.md - Complete documentation
+QUICKSTART.md - Quick start guide
+FAQ.md - Frequently asked questions
+CONTRIBUTING.md - Contribution guidelines
+CHANGELOG.md - Version history
+
+INSTALLATION
+------------
+1. Upload to /modules/prestashopstats/
+2. Install via Module Manager
+3. Access via Stats > Statistics Dashboard
+
+For detailed instructions, see INSTALLATION.md
+
+SUPPORT
+-------
+GitHub: https://github.com/giulianodemar-netizen/Prestashopstats/issues
+
+COPYRIGHT
+---------
+Copyright (c) 2024 Giuliano De Mar
+Released under MIT License - see LICENSE file

@@ -1,0 +1,5 @@
+## PrestaShop Statistics Module - Logo
+
+This directory contains the module logo.
+
+A logo file named `logo.png` (200x200 pixels) should be placed here for the module to display properly in the PrestaShop admin interface.

@@ -13,11 +13,84 @@ Before installing the module, ensure your PrestaShop installation meets the foll
 
 ## Installation Methods
 
-### Method 1: Direct Upload (Recommended)
+### Method 1: ZIP Upload (Recommended)
 
-1. **Download the Module**
-   - Download the complete module package
-   - Extract if compressed
+**IMPORTANT:** PrestaShop requires a specific ZIP structure. Do not simply ZIP the repository root!
+
+#### Option A: Use the Build Script (Easiest)
+
+1. **Run the build script** (Linux/Mac)
+   ```bash
+   cd /path/to/Prestashopstats
+   ./build.sh
+   ```
+   
+   This creates a properly structured ZIP at `release/prestashopstats-v1.0.0.zip`
+
+2. **Upload via Admin Panel**
+   - Log in to your PrestaShop admin panel
+   - Go to **Modules** > **Module Manager**
+   - Click **Upload a module** button
+   - Select `release/prestashopstats-v1.0.0.zip`
+   - Click **Upload**
+   - The module will be automatically installed
+
+#### Option B: Manual ZIP Creation
+
+1. **Create proper ZIP structure**
+   
+   The ZIP must contain a folder named `prestashopstats` with module files inside:
+   
+   ```
+   prestashopstats.zip
+     └── prestashopstats/
+         ├── prestashopstats.php
+         ├── config.xml
+         ├── index.php
+         ├── LICENSE
+         ├── controllers/
+         ├── views/
+         └── translations/
+   ```
+   
+   **DO NOT include these files in the ZIP:**
+   - README.md, DOCUMENTATION.md, and other markdown files
+   - composer.json (unless needed)
+   - screenshots/, docs/, build/, release/ folders
+   - .git/, .gitignore
+
+2. **Create ZIP manually** (Linux/Mac)
+   ```bash
+   # From the repository root
+   mkdir -p /tmp/prestashopstats-build/prestashopstats
+   
+   # Copy only module files
+   cp prestashopstats.php /tmp/prestashopstats-build/prestashopstats/
+   cp config.xml /tmp/prestashopstats-build/prestashopstats/
+   cp index.php /tmp/prestashopstats-build/prestashopstats/
+   cp LICENSE /tmp/prestashopstats-build/prestashopstats/
+   cp -r controllers /tmp/prestashopstats-build/prestashopstats/
+   cp -r views /tmp/prestashopstats-build/prestashopstats/
+   cp -r translations /tmp/prestashopstats-build/prestashopstats/
+   
+   # Create ZIP
+   cd /tmp/prestashopstats-build
+   zip -r prestashopstats.zip prestashopstats/
+   ```
+
+3. **Upload via Admin Panel**
+   - Log in to your PrestaShop admin panel
+   - Go to **Modules** > **Module Manager**
+   - Click **Upload a module** button
+   - Select the `prestashopstats.zip` file
+   - Click **Upload**
+   - The module will be automatically installed
+
+### Method 2: Direct FTP Upload
+
+1. **Prepare module files**
+   - Use the build script or manually copy only the necessary module files (as shown in Method 1)
+   - Do NOT upload documentation files like README.md, CHANGELOG.md, etc.
 
 2. **Upload to PrestaShop**
    ```bash
@@ -25,7 +98,14 @@ Before installing the module, ensure your PrestaShop installation meets the foll
    - Connect to your server
    - Navigate to /modules/ directory
    - Create a folder named 'prestashopstats'
-   - Upload all module files to /modules/prestashopstats/
+   - Upload ONLY these files/folders to /modules/prestashopstats/:
+     * prestashopstats.php
+     * config.xml
+     * index.php
+     * LICENSE
+     * controllers/
+     * views/
+     * translations/
    ```
 
 3. **Set Permissions**
@@ -42,23 +122,6 @@ Before installing the module, ensure your PrestaShop installation meets the foll
    - Search for "PrestaShop Statistics" or "prestashopstats"
    - Click the **Install** button
    - Wait for the installation to complete
-
-### Method 2: ZIP Upload
-
-1. **Create ZIP Archive**
-   ```bash
-   # If you have the module folder
-   cd /path/to/modules
-   zip -r prestashopstats.zip prestashopstats/
-   ```
-
-2. **Upload via Admin Panel**
-   - Log in to your PrestaShop admin panel
-   - Go to **Modules** > **Module Manager**
-   - Click **Upload a module** button
-   - Select the `prestashopstats.zip` file
-   - Click **Upload**
-   - The module will be automatically installed
 
 ### Method 3: Command Line (Advanced)
 
@@ -139,6 +202,67 @@ After installation, verify the following:
 - [ ] No PHP errors in error logs
 
 ## Troubleshooting
+
+### "Oops, something went wrong" Error During ZIP Upload
+
+**Problem**: When uploading the module ZIP, PrestaShop shows "ops qualcosa è andato storto" (oops something went wrong)
+
+**Root Cause**: The ZIP file structure is incorrect or contains files that PrestaShop doesn't expect.
+
+**Solutions**:
+
+1. **Use the Build Script (Recommended)**
+   ```bash
+   cd /path/to/Prestashopstats
+   ./build.sh
+   ```
+   This creates a properly structured ZIP at `release/prestashopstats-v1.0.0.zip`
+
+2. **Check ZIP Structure**
+   The ZIP must have this exact structure:
+   ```
+   prestashopstats.zip
+     └── prestashopstats/          ← Folder must be named 'prestashopstats'
+         ├── prestashopstats.php   ← Main module file
+         ├── config.xml
+         ├── index.php
+         ├── LICENSE
+         ├── controllers/
+         ├── views/
+         └── translations/
+   ```
+   
+   **Common Mistakes:**
+   - ❌ Documentation files (README.md, CHANGELOG.md, etc.) at module root
+   - ❌ Extra folders (docs/, screenshots/, build/, .git/)
+   - ❌ Files directly in ZIP root without prestashopstats/ folder
+   - ❌ Wrong folder name (Prestashopstats instead of prestashopstats)
+
+3. **Verify ZIP Contents**
+   ```bash
+   unzip -l yourfile.zip | head -20
+   ```
+   First line should show: `prestashopstats/`
+
+4. **Create Clean ZIP Manually**
+   ```bash
+   # From repository root
+   mkdir -p /tmp/ps-build/prestashopstats
+   cp prestashopstats.php config.xml index.php LICENSE /tmp/ps-build/prestashopstats/
+   cp -r controllers views translations /tmp/ps-build/prestashopstats/
+   cd /tmp/ps-build
+   zip -r prestashopstats.zip prestashopstats/
+   ```
+
+5. **Check PrestaShop Logs**
+   ```bash
+   # Check for specific error messages
+   tail -f /path/to/prestashop/var/logs/*.log
+   ```
+
+6. **Verify File Size**
+   - If ZIP is too large (>50MB), it may exceed PHP upload limits
+   - Check `upload_max_filesize` and `post_max_size` in php.ini
 
 ### Installation Fails
 

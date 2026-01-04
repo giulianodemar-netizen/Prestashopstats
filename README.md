@@ -52,21 +52,41 @@ A comprehensive statistics module for PrestaShop that provides detailed analytic
 
 ## 📦 Installation
 
-### Quick Install
+### Quick Install (Recommended)
 
-1. Download the module
-2. Upload to `/modules/prestashopstats/`
-3. Install via Module Manager
-4. Access via Stats > Statistics Dashboard
+**⚠️ IMPORTANT:** Use the build script to create a proper ZIP file for PrestaShop!
+
+```bash
+# Clone or download the repository
+git clone https://github.com/giulianodemar-netizen/Prestashopstats.git
+cd Prestashopstats
+
+# Run the build script to create installation ZIP
+./build.sh
+
+# Upload the generated file: release/prestashopstats-v1.0.0.zip
+```
+
+Then:
+1. Go to **Modules** > **Module Manager** in PrestaShop admin
+2. Click **Upload a module**
+3. Select `release/prestashopstats-v1.0.0.zip`
+4. Click **Install**
+
+**Note:** Do NOT upload the repository ZIP directly! It contains documentation files that prevent installation. Always use the build script or follow the detailed instructions in [INSTALLATION.md](INSTALLATION.md)
+
+### Alternative: Direct FTP Upload
+
+Upload only the core module files to `/modules/prestashopstats/`:
+- prestashopstats.php
+- config.xml  
+- index.php
+- LICENSE
+- controllers/
+- views/
+- translations/
 
 For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md)
-
-### Via Admin Panel
-
-1. Go to **Modules** > **Module Manager**
-2. Click **Upload a module**
-3. Select the module ZIP file
-4. Click **Install**
 
 ## 📖 Documentation
 

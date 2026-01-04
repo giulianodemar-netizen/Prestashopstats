@@ -25,6 +25,7 @@
 *.zip
 dist/
 build/
+release/
 
 # OS generated files
 Thumbs.db

@@ -1,5 +1,5 @@
 {*
-* Visits and Traffic Statistics Tab - Italiano
+* Visits and Traffic Statistics Tab
 *}
 
 {if isset($stats.traffic)}
@@ -7,7 +7,7 @@
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <i class="icon-signal"></i> Visite Totali
+                <i class="icon-signal"></i> {l s='Total Visits' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.traffic.total_visits|escape:'html':'UTF-8'}</h2>
@@ -17,7 +17,7 @@
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <i class="icon-eye"></i> Visualizzazioni Pagina
+                <i class="icon-eye"></i> {l s='Total Page Views' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.traffic.total_page_views|escape:'html':'UTF-8'}</h2>
@@ -27,7 +27,7 @@
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <i class="icon-shopping-cart"></i> Conversioni
+                <i class="icon-shopping-cart"></i> {l s='Conversions' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.traffic.conversions|escape:'html':'UTF-8'}</h2>
@@ -37,7 +37,7 @@
     <div class="col-lg-3 col-md-6">
         <div class="panel panel-warning">
             <div class="panel-heading">
-                <i class="icon-percent"></i> Tasso di Conversione
+                <i class="icon-percent"></i> {l s='Conversion Rate' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.traffic.conversion_rate|escape:'html':'UTF-8'}%</h2>
@@ -51,7 +51,7 @@
     <div class="col-lg-6">
         <div class="panel">
             <div class="panel-heading">
-                <i class="icon-arrow-circle-right"></i> Top {$limit} Fonti di Traffico
+                <i class="icon-arrow-circle-right"></i> {l s='Top' mod='prestashopstats'} {$limit} {l s='Traffic Sources' mod='prestashopstats'}
             </div>
             <div class="panel-body">
                 <canvas id="trafficSourcesChart" height="120"></canvas>
@@ -60,9 +60,9 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Fonte</th>
-                                <th class="text-right">Visite</th>
-                                <th class="text-right">Percentuale</th>
+                                <th>{l s='Source' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Visits' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Percentage' mod='prestashopstats'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -96,7 +96,7 @@
     <div class="col-lg-6">
         <div class="panel">
             <div class="panel-heading">
-                <i class="icon-eye"></i> Top {$limit} Prodotti Più Visti
+                <i class="icon-eye"></i> {l s='Top' mod='prestashopstats'} {$limit} {l s='Most Viewed Products' mod='prestashopstats'}
             </div>
             <div class="panel-body">
                 <div style="max-height: 600px; overflow-y: auto;">
@@ -104,19 +104,15 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Prodotto</th>
-                                <th class="text-right">Visualizzazioni</th>
+                                <th>{l s='Product' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Views' mod='prestashopstats'}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {foreach from=$stats.products.most_viewed item=product name=viewLoop}
                             <tr>
                                 <td>{$smarty.foreach.viewLoop.iteration}</td>
-                                <td>
-                                    <a href="index.php?controller=AdminProducts&id_product={$product.id_product|escape:'html':'UTF-8'}&updateproduct&token={Tools::getAdminTokenLite('AdminProducts')}" target="_blank">
-                                        {$product.name|escape:'html':'UTF-8'}
-                                    </a>
-                                </td>
+                                <td>{$product.name|escape:'html':'UTF-8'}</td>
                                 <td class="text-right"><strong>{$product.view_count|escape:'html':'UTF-8'}</strong></td>
                             </tr>
                             {/foreach}
@@ -134,7 +130,7 @@
     <div class="col-lg-12">
         <div class="panel">
             <div class="panel-heading">
-                <i class="icon-tags"></i> Top {$limit} Performance Categorie Prodotti
+                <i class="icon-tags"></i> {l s='Top' mod='prestashopstats'} {$limit} {l s='Product Categories Performance' mod='prestashopstats'}
             </div>
             <div class="panel-body">
                 <div style="max-height: 400px; overflow-y: auto;">
@@ -142,9 +138,9 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Categoria</th>
-                                <th class="text-right">Prodotti</th>
-                                <th class="text-right">Unità Vendute</th>
+                                <th>{l s='Category' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Products' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Units Sold' mod='prestashopstats'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -167,7 +163,7 @@
 
 <script>
 {if isset($stats.traffic.sources) && count($stats.traffic.sources) > 0}
-// Traffic Sources Chart - Limitato a max 10
+// Traffic Sources Chart
 var sourceNames = [];
 var sourceVisits = [];
 {foreach from=$stats.traffic.sources item=source name=sourceChartLoop}
@@ -183,7 +179,7 @@ new Chart(ctx, {
     data: {
         labels: sourceNames,
         datasets: [{
-            label: 'Visite',
+            label: 'Visits',
             data: sourceVisits,
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
             borderColor: 'rgba(75, 192, 192, 1)',

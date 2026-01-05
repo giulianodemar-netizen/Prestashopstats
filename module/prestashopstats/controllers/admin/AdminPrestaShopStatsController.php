@@ -49,6 +49,8 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 break;
             case 'orders':
                 $stats['sales'] = $this->getSalesStatistics($date_from, $date_to, $limit);
+                $stats['payments'] = $this->getPaymentMethodStats($date_from, $date_to, $limit);
+                $stats['returns'] = $this->getReturnsStats($date_from, $date_to);
                 break;
             case 'visits':
                 $stats['traffic'] = $this->getTrafficAnalytics($date_from, $date_to, $limit);
@@ -61,6 +63,8 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 $stats['products'] = $this->getProductMetrics($date_from, $date_to, 10);
                 $stats['geolocation'] = $this->getGeolocationData($date_from, $date_to, 10);
                 $stats['traffic'] = $this->getTrafficAnalytics($date_from, $date_to, 10);
+                $stats['payments'] = $this->getPaymentMethodStats($date_from, $date_to, 5);
+                $stats['returns'] = $this->getReturnsStats($date_from, $date_to);
                 break;
         }
 
@@ -341,5 +345,86 @@ class AdminPrestaShopStatsController extends ModuleAdminController
         $analytics['by_date'] = Db::getInstance()->executeS($sql);
 
         return $analytics;
+    }
+
+    /**
+     * Get payment method statistics (only valid orders)
+     */
+    private function getPaymentMethodStats($date_from, $date_to, $limit = 10)
+    {
+        $stats = [];
+
+        // Get order states that are considered valid (paid, shipped, delivered)
+        // Exclude cancelled, refunded, payment error states
+        $validStates = [2, 3, 4, 5, 9, 10, 11, 12]; // Common valid state IDs
+        $statesList = implode(',', array_map('intval', $validStates));
+
+        // Payment methods with order count and revenue
+        $sql = 'SELECT o.payment, 
+                       COUNT(DISTINCT o.id_order) as order_count,
+                       SUM(o.total_paid) as total_revenue
+                FROM '._DB_PREFIX_.'orders o
+                WHERE o.date_add BETWEEN "'.pSQL($date_from).' 00:00:00" 
+                AND "'.pSQL($date_to).' 23:59:59"
+                AND o.current_state IN ('.$statesList.')
+                AND o.payment != ""
+                GROUP BY o.payment
+                ORDER BY order_count DESC
+                LIMIT '.(int)$limit;
+        $stats['by_payment'] = Db::getInstance()->executeS($sql);
+
+        return $stats;
+    }
+
+    /**
+     * Get returns/refunds statistics
+     */
+    private function getReturnsStats($date_from, $date_to)
+    {
+        $stats = [];
+
+        // Get refunded order state ID (typically 7)
+        $refundedStates = [6, 7]; // Refunded, Cancelled
+        $statesList = implode(',', array_map('intval', $refundedStates));
+
+        // Total returns/refunds
+        $sql = 'SELECT COUNT(DISTINCT o.id_order) as total_returns,
+                       SUM(o.total_paid) as total_refunded
+                FROM '._DB_PREFIX_.'orders o
+                WHERE o.date_add BETWEEN "'.pSQL($date_from).' 00:00:00" 
+                AND "'.pSQL($date_to).' 23:59:59"
+                AND o.current_state IN ('.$statesList.')';
+        $result = Db::getInstance()->getRow($sql);
+        $stats['total_returns'] = (int)$result['total_returns'];
+        $stats['total_refunded'] = (float)$result['total_refunded'];
+
+        // Returns by product
+        $sql = 'SELECT p.id_product, pl.name, 
+                       COUNT(DISTINCT od.id_order) as return_count,
+                       SUM(od.product_quantity) as quantity_returned
+                FROM '._DB_PREFIX_.'order_detail od
+                INNER JOIN '._DB_PREFIX_.'orders o ON od.id_order = o.id_order
+                INNER JOIN '._DB_PREFIX_.'product p ON od.product_id = p.id_product
+                INNER JOIN '._DB_PREFIX_.'product_lang pl ON (p.id_product = pl.id_product AND pl.id_lang = '.(int)$this->context->language->id.')
+                WHERE o.date_add BETWEEN "'.pSQL($date_from).' 00:00:00" 
+                AND "'.pSQL($date_to).' 23:59:59"
+                AND o.current_state IN ('.$statesList.')
+                GROUP BY p.id_product
+                ORDER BY return_count DESC
+                LIMIT 10';
+        $stats['by_product'] = Db::getInstance()->executeS($sql);
+
+        // Returns by date
+        $sql = 'SELECT DATE(o.date_add) as return_date,
+                       COUNT(DISTINCT o.id_order) as return_count
+                FROM '._DB_PREFIX_.'orders o
+                WHERE o.date_add BETWEEN "'.pSQL($date_from).' 00:00:00" 
+                AND "'.pSQL($date_to).' 23:59:59"
+                AND o.current_state IN ('.$statesList.')
+                GROUP BY DATE(o.date_add)
+                ORDER BY return_date ASC';
+        $stats['by_date'] = Db::getInstance()->executeS($sql);
+
+        return $stats;
     }
 }

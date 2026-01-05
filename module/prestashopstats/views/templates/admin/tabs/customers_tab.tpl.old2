@@ -1,5 +1,5 @@
 {*
-* Customers Statistics Tab - Italiano (Bug chart fisso)
+* Customers Statistics Tab
 *}
 
 {if isset($stats.customers)}
@@ -7,7 +7,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="panel panel-info">
             <div class="panel-heading">
-                <i class="icon-group"></i> Totale Clienti Attivi
+                <i class="icon-group"></i> {l s='Total Active Customers' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.customers.total_customers|escape:'html':'UTF-8'}</h2>
@@ -17,7 +17,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="panel panel-success">
             <div class="panel-heading">
-                <i class="icon-user"></i> Nuovi Clienti
+                <i class="icon-user"></i> {l s='New Customers' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>{$stats.customers.new_customers|escape:'html':'UTF-8'}</h2>
@@ -27,7 +27,7 @@
     <div class="col-lg-4 col-md-6">
         <div class="panel panel-warning">
             <div class="panel-heading">
-                <i class="icon-signal"></i> Tasso di Crescita
+                <i class="icon-signal"></i> {l s='Growth Rate' mod='prestashopstats'}
             </div>
             <div class="panel-body text-center">
                 <h2>
@@ -47,7 +47,7 @@
     <div class="col-lg-6">
         <div class="panel">
             <div class="panel-heading">
-                <i class="icon-globe"></i> Top {$limit} Paesi per Numero di Clienti
+                <i class="icon-globe"></i> {l s='Top' mod='prestashopstats'} {$limit} {l s='Countries by Customer Count' mod='prestashopstats'}
             </div>
             <div class="panel-body">
                 <canvas id="customersByCountryChart" height="120"></canvas>
@@ -56,8 +56,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Paese</th>
-                                <th class="text-right">Numero Clienti</th>
+                                <th>{l s='Country' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Customer Count' mod='prestashopstats'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +80,7 @@
     <div class="col-lg-6">
         <div class="panel">
             <div class="panel-heading">
-                <i class="icon-repeat"></i> Distribuzione Frequenza Acquisti
+                <i class="icon-repeat"></i> {l s='Purchase Frequency Distribution' mod='prestashopstats'}
             </div>
             <div class="panel-body">
                 <canvas id="purchaseFrequencyChart" height="120"></canvas>
@@ -88,9 +88,9 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>Frequenza</th>
-                                <th class="text-right">Numero Clienti</th>
-                                <th class="text-right">Percentuale</th>
+                                <th>{l s='Frequency' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Customer Count' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Percentage' mod='prestashopstats'}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -122,7 +122,7 @@
 
 <script>
 {if isset($stats.customers.by_country) && count($stats.customers.by_country) > 0}
-// Customers by Country Chart - LIMITATO A TOP 10 per evitare grafici troppo lunghi
+// Customers by Country Chart
 var countryNames = [];
 var countryCustomers = [];
 {foreach from=$stats.customers.by_country item=country name=countryChartLoop}
@@ -138,7 +138,7 @@ new Chart(ctx1, {
     data: {
         labels: countryNames,
         datasets: [{
-            label: 'Clienti',
+            label: 'Customers',
             data: countryCustomers,
             backgroundColor: 'rgba(54, 162, 235, 0.6)',
             borderColor: 'rgba(54, 162, 235, 1)',

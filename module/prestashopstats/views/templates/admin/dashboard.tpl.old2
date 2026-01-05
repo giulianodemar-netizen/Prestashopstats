@@ -1,5 +1,5 @@
 {*
-* PrestaShop Statistics Dashboard Template - Italiano
+* PrestaShop Statistics Dashboard Template with Tabs and Charts
 *
 * @author    Giuliano De Mar
 * @copyright Copyright (c) 2024
@@ -10,7 +10,7 @@
 
 <div class="panel prestashopstats-dashboard">
     <div class="panel-heading">
-        <i class="icon-bar-chart"></i> Dashboard Statistiche
+        <i class="icon-bar-chart"></i> {l s='Statistics Dashboard' mod='prestashopstats'}
     </div>
     
     <div class="panel-body">
@@ -23,15 +23,15 @@
                     <input type="hidden" name="tab" value="{$active_tab|escape:'html':'UTF-8'}" id="active-tab-input" />
                     
                     <div class="form-group">
-                        <label>Da:</label>
+                        <label>{l s='From' mod='prestashopstats'}:</label>
                         <input type="date" name="date_from" value="{$date_from|escape:'html':'UTF-8'}" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label>A:</label>
+                        <label>{l s='To' mod='prestashopstats'}:</label>
                         <input type="date" name="date_to" value="{$date_to|escape:'html':'UTF-8'}" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label>Mostra Top:</label>
+                        <label>{l s='Show Top' mod='prestashopstats'}:</label>
                         <select name="limit" class="form-control">
                             <option value="10" {if $limit == 10}selected{/if}>10</option>
                             <option value="25" {if $limit == 25}selected{/if}>25</option>
@@ -40,7 +40,7 @@
                         </select>
                     </div>
                     <button type="submit" class="btn btn-default">
-                        <i class="icon-search"></i> Filtra
+                        <i class="icon-search"></i> {l s='Filter' mod='prestashopstats'}
                     </button>
                 </form>
             </div>
@@ -53,22 +53,22 @@
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="{if $active_tab == 'dashboard'}active{/if}">
                 <a href="#" data-tab="dashboard" class="tab-link">
-                    <i class="icon-dashboard"></i> Dashboard
+                    <i class="icon-dashboard"></i> {l s='Dashboard' mod='prestashopstats'}
                 </a>
             </li>
             <li role="presentation" class="{if $active_tab == 'orders'}active{/if}">
                 <a href="#" data-tab="orders" class="tab-link">
-                    <i class="icon-shopping-cart"></i> Ordini
+                    <i class="icon-shopping-cart"></i> {l s='Orders' mod='prestashopstats'}
                 </a>
             </li>
             <li role="presentation" class="{if $active_tab == 'customers'}active{/if}">
                 <a href="#" data-tab="customers" class="tab-link">
-                    <i class="icon-group"></i> Clienti
+                    <i class="icon-group"></i> {l s='Customers' mod='prestashopstats'}
                 </a>
             </li>
             <li role="presentation" class="{if $active_tab == 'visits'}active{/if}">
                 <a href="#" data-tab="visits" class="tab-link">
-                    <i class="icon-signal"></i> Visite
+                    <i class="icon-signal"></i> {l s='Visits' mod='prestashopstats'}
                 </a>
             </li>
         </ul>

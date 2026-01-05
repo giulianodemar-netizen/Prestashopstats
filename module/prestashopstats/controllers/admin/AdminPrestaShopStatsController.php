@@ -162,6 +162,36 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND "'.pSQL($date_to).' 23:59:59"';
         $insights['new_customers'] = (int)Db::getInstance()->getValue($sql);
 
+        // Customers with addresses
+        $sql = 'SELECT COUNT(DISTINCT c.id_customer) as total 
+                FROM '._DB_PREFIX_.'customer c
+                INNER JOIN '._DB_PREFIX_.'address a ON c.id_customer = a.id_customer
+                WHERE c.active = 1 AND a.deleted = 0';
+        $insights['customers_with_address'] = (int)Db::getInstance()->getValue($sql);
+
+        // Customers without addresses
+        $insights['customers_without_address'] = $insights['total_customers'] - $insights['customers_with_address'];
+
+        // Customers with carts
+        $sql = 'SELECT COUNT(DISTINCT c.id_customer) as total
+                FROM '._DB_PREFIX_.'customer c
+                INNER JOIN '._DB_PREFIX_.'cart cart ON c.id_customer = cart.id_customer
+                WHERE c.active = 1';
+        $insights['customers_with_cart'] = (int)Db::getInstance()->getValue($sql);
+
+        // Customers without carts
+        $insights['customers_without_cart'] = $insights['total_customers'] - $insights['customers_with_cart'];
+
+        // Customers who have made orders
+        $sql = 'SELECT COUNT(DISTINCT c.id_customer) as total
+                FROM '._DB_PREFIX_.'customer c
+                INNER JOIN '._DB_PREFIX_.'orders o ON c.id_customer = o.id_customer
+                WHERE c.active = 1 AND o.valid = 1';
+        $insights['customers_with_orders'] = (int)Db::getInstance()->getValue($sql);
+
+        // Customers without orders
+        $insights['customers_without_orders'] = $insights['total_customers'] - $insights['customers_with_orders'];
+
         // Customers by country
         $sql = 'SELECT cl.name as country_name, COUNT(DISTINCT c.id_customer) as customer_count
                 FROM '._DB_PREFIX_.'customer c
@@ -176,10 +206,11 @@ class AdminPrestaShopStatsController extends ModuleAdminController
         // Customer purchase frequency
         $sql = 'SELECT 
                     CASE 
-                        WHEN order_count = 1 THEN "1 order"
-                        WHEN order_count BETWEEN 2 AND 5 THEN "2-5 orders"
-                        WHEN order_count BETWEEN 6 AND 10 THEN "6-10 orders"
-                        ELSE "10+ orders"
+                        WHEN order_count = 0 THEN "Nessun ordine"
+                        WHEN order_count = 1 THEN "1 ordine"
+                        WHEN order_count BETWEEN 2 AND 5 THEN "2-5 ordini"
+                        WHEN order_count BETWEEN 6 AND 10 THEN "6-10 ordini"
+                        ELSE "10+ ordini"
                     END as frequency_group,
                     COUNT(*) as customer_count
                 FROM (
@@ -189,8 +220,37 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                     WHERE c.active = 1
                     GROUP BY c.id_customer
                 ) as customer_orders
-                GROUP BY frequency_group';
+                GROUP BY frequency_group
+                ORDER BY 
+                    CASE frequency_group
+                        WHEN "Nessun ordine" THEN 0
+                        WHEN "1 ordine" THEN 1
+                        WHEN "2-5 ordini" THEN 2
+                        WHEN "6-10 ordini" THEN 3
+                        ELSE 4
+                    END';
         $insights['purchase_frequency'] = Db::getInstance()->executeS($sql);
+
+        // Top customers by orders (with link)
+        $sql = 'SELECT c.id_customer, c.firstname, c.lastname, c.email,
+                       COUNT(DISTINCT o.id_order) as order_count,
+                       SUM(o.total_paid) as total_spent
+                FROM '._DB_PREFIX_.'customer c
+                INNER JOIN '._DB_PREFIX_.'orders o ON c.id_customer = o.id_customer
+                WHERE c.active = 1 AND o.valid = 1
+                GROUP BY c.id_customer
+                ORDER BY order_count DESC
+                LIMIT '.(int)$limit;
+        $insights['top_customers'] = Db::getInstance()->executeS($sql);
+
+        // Customers without orders (for listing)
+        $sql = 'SELECT c.id_customer, c.firstname, c.lastname, c.email, c.date_add
+                FROM '._DB_PREFIX_.'customer c
+                LEFT JOIN '._DB_PREFIX_.'orders o ON c.id_customer = o.id_customer
+                WHERE c.active = 1 AND o.id_order IS NULL
+                ORDER BY c.date_add DESC
+                LIMIT '.(int)$limit;
+        $insights['customers_no_orders'] = Db::getInstance()->executeS($sql);
 
         return $insights;
     }

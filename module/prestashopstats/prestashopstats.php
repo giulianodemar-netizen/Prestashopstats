@@ -239,6 +239,10 @@ class PrestaShopStats extends Module
         $output = '';
 
         if (Tools::isSubmit('submit'.$this->name)) {
+            // Save the configuration value
+            $tracking_enabled = Tools::getValue('PRESTASHOPSTATS_TRACKING_ENABLED');
+            Configuration::updateValue('PRESTASHOPSTATS_TRACKING_ENABLED', $tracking_enabled);
+            
             $output .= $this->displayConfirmation($this->l('Settings updated successfully.'));
         }
 

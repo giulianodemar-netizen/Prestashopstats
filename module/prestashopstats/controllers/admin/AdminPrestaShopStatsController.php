@@ -30,21 +30,48 @@ class AdminPrestaShopStatsController extends ModuleAdminController
         // Get date range from request or set defaults
         $date_from = Tools::getValue('date_from', date('Y-m-d', strtotime('-30 days')));
         $date_to = Tools::getValue('date_to', date('Y-m-d'));
+        
+        // Get active tab (default: dashboard)
+        $active_tab = Tools::getValue('tab', 'dashboard');
+        
+        // Get limit for top N lists (default: 10)
+        $limit = (int)Tools::getValue('limit', 10);
+        if (!in_array($limit, [10, 25, 50, 100])) {
+            $limit = 10;
+        }
 
-        // Gather statistics
-        $stats = [
-            'sales' => $this->getSalesStatistics($date_from, $date_to),
-            'customers' => $this->getCustomerInsights($date_from, $date_to),
-            'products' => $this->getProductMetrics($date_from, $date_to),
-            'geolocation' => $this->getGeolocationData($date_from, $date_to),
-            'traffic' => $this->getTrafficAnalytics($date_from, $date_to),
-        ];
+        // Gather statistics based on active tab
+        $stats = [];
+        
+        switch ($active_tab) {
+            case 'customers':
+                $stats['customers'] = $this->getCustomerInsights($date_from, $date_to, $limit);
+                break;
+            case 'orders':
+                $stats['sales'] = $this->getSalesStatistics($date_from, $date_to, $limit);
+                break;
+            case 'visits':
+                $stats['traffic'] = $this->getTrafficAnalytics($date_from, $date_to, $limit);
+                $stats['products'] = $this->getProductMetrics($date_from, $date_to, $limit);
+                break;
+            case 'dashboard':
+            default:
+                $stats['sales'] = $this->getSalesStatistics($date_from, $date_to, 10);
+                $stats['customers'] = $this->getCustomerInsights($date_from, $date_to, 10);
+                $stats['products'] = $this->getProductMetrics($date_from, $date_to, 10);
+                $stats['geolocation'] = $this->getGeolocationData($date_from, $date_to, 10);
+                $stats['traffic'] = $this->getTrafficAnalytics($date_from, $date_to, 10);
+                break;
+        }
 
         $this->context->smarty->assign([
             'stats' => $stats,
             'date_from' => $date_from,
             'date_to' => $date_to,
+            'active_tab' => $active_tab,
+            'limit' => $limit,
             'module_dir' => $this->module->getPathUri(),
+            'controller_url' => $this->context->link->getAdminLink('AdminPrestaShopStats'),
         ]);
 
         $this->setTemplate('dashboard.tpl');
@@ -53,7 +80,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
     /**
      * Get sales statistics
      */
-    private function getSalesStatistics($date_from, $date_to)
+    private function getSalesStatistics($date_from, $date_to, $limit = 10)
     {
         $sales = [];
 
@@ -81,7 +108,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND o.valid = 1
                 GROUP BY p.id_product
                 ORDER BY revenue DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $sales['by_product'] = Db::getInstance()->executeS($sql);
 
         // Sales by customer
@@ -96,7 +123,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND o.valid = 1
                 GROUP BY c.id_customer
                 ORDER BY total_spent DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $sales['by_customer'] = Db::getInstance()->executeS($sql);
 
         // Sales by date
@@ -117,7 +144,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
     /**
      * Get customer insights
      */
-    private function getCustomerInsights($date_from, $date_to)
+    private function getCustomerInsights($date_from, $date_to, $limit = 10)
     {
         $insights = [];
 
@@ -139,7 +166,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 WHERE c.active = 1
                 GROUP BY cl.name
                 ORDER BY customer_count DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $insights['by_country'] = Db::getInstance()->executeS($sql);
 
         // Customer purchase frequency
@@ -167,7 +194,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
     /**
      * Get product metrics
      */
-    private function getProductMetrics($date_from, $date_to)
+    private function getProductMetrics($date_from, $date_to, $limit = 10)
     {
         $metrics = [];
 
@@ -184,7 +211,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND o.valid = 1
                 GROUP BY p.id_product
                 ORDER BY total_quantity DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $metrics['most_purchased'] = Db::getInstance()->executeS($sql);
 
         // Product views from page_views table
@@ -196,7 +223,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND pv.id_product IS NOT NULL
                 GROUP BY pv.id_product
                 ORDER BY view_count DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $metrics['most_viewed'] = Db::getInstance()->executeS($sql);
 
         // If no custom views data, fall back to connections data
@@ -218,7 +245,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND o.valid = 1
                 GROUP BY cl.name
                 ORDER BY total_sold DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $metrics['by_category'] = Db::getInstance()->executeS($sql);
 
         return $metrics;
@@ -227,7 +254,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
     /**
      * Get geolocation data
      */
-    private function getGeolocationData($date_from, $date_to)
+    private function getGeolocationData($date_from, $date_to, $limit = 10)
     {
         $data = [];
 
@@ -243,7 +270,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND o.valid = 1
                 GROUP BY cl.name
                 ORDER BY order_count DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $data['orders_by_country'] = Db::getInstance()->executeS($sql);
 
         // Traffic by country from custom table
@@ -254,7 +281,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND country_code IS NOT NULL
                 GROUP BY country_code
                 ORDER BY visit_count DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $data['traffic_by_country'] = Db::getInstance()->executeS($sql);
 
         return $data;
@@ -263,7 +290,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
     /**
      * Get traffic analytics
      */
-    private function getTrafficAnalytics($date_from, $date_to)
+    private function getTrafficAnalytics($date_from, $date_to, $limit = 10)
     {
         $analytics = [];
 
@@ -275,7 +302,7 @@ class AdminPrestaShopStatsController extends ModuleAdminController
                 AND source IS NOT NULL
                 GROUP BY source
                 ORDER BY visit_count DESC
-                LIMIT 10';
+                LIMIT '.(int)$limit;
         $analytics['sources'] = Db::getInstance()->executeS($sql);
 
         // Total visits

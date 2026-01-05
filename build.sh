@@ -4,35 +4,17 @@
 
 MODULE_NAME="prestashopstats"
 VERSION="1.0.0"
-BUILD_DIR="build"
 RELEASE_DIR="release"
 
 echo "Building PrestaShop Statistics Module v${VERSION}..."
 
-# Create build and release directories
-rm -rf $BUILD_DIR $RELEASE_DIR
-mkdir -p $BUILD_DIR/$MODULE_NAME
+# Create release directory
+rm -rf $RELEASE_DIR
 mkdir -p $RELEASE_DIR
 
-# Copy only necessary module files (exclude documentation and development files)
-echo "Copying module files..."
-
-# Core files
-cp prestashopstats.php $BUILD_DIR/$MODULE_NAME/
-cp config.xml $BUILD_DIR/$MODULE_NAME/
-cp index.php $BUILD_DIR/$MODULE_NAME/
-cp LICENSE $BUILD_DIR/$MODULE_NAME/
-
-# Copy directories
-cp -r controllers $BUILD_DIR/$MODULE_NAME/
-cp -r views $BUILD_DIR/$MODULE_NAME/
-cp -r translations $BUILD_DIR/$MODULE_NAME/
-
-# Optional: Include composer.json if needed (commented out by default)
-# cp composer.json $BUILD_DIR/$MODULE_NAME/
-
-echo "Creating ZIP archive..."
-cd $BUILD_DIR
+# Copy module directory and create ZIP
+echo "Creating ZIP archive from module directory..."
+cd module
 zip -r ../$RELEASE_DIR/${MODULE_NAME}-v${VERSION}.zip $MODULE_NAME
 cd ..
 
@@ -45,8 +27,8 @@ echo "3. Click 'Upload a module'"
 echo "4. Select the ZIP file: $RELEASE_DIR/${MODULE_NAME}-v${VERSION}.zip"
 echo "5. Click Install"
 
-# Cleanup
-rm -rf $BUILD_DIR
-
 echo ""
 echo "Build complete!"
+echo ""
+echo "Alternative: You can also ZIP the module/prestashopstats folder directly"
+echo "and upload it to PrestaShop without running this script."

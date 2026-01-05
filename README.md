@@ -54,7 +54,7 @@ A comprehensive statistics module for PrestaShop that provides detailed analytic
 
 ### Quick Install (Recommended)
 
-**⚠️ IMPORTANT:** Use the build script to create a proper ZIP file for PrestaShop!
+**Method 1: Use the build script**
 
 ```bash
 # Clone or download the repository
@@ -67,17 +67,25 @@ cd Prestashopstats
 # Upload the generated file: release/prestashopstats-v1.0.0.zip
 ```
 
+**Method 2: ZIP the module folder directly**
+
+Simply ZIP the `module/prestashopstats` folder and upload it to PrestaShop.
+
+```bash
+cd module
+zip -r prestashopstats.zip prestashopstats/
+# Upload prestashopstats.zip to PrestaShop
+```
+
 Then:
 1. Go to **Modules** > **Module Manager** in PrestaShop admin
 2. Click **Upload a module**
-3. Select `release/prestashopstats-v1.0.0.zip`
+3. Select the ZIP file
 4. Click **Install**
-
-**Note:** Do NOT upload the repository ZIP directly! It contains documentation files that prevent installation. Always use the build script or follow the detailed instructions in [INSTALLATION.md](INSTALLATION.md)
 
 ### Alternative: Direct FTP Upload
 
-Upload only the core module files to `/modules/prestashopstats/`:
+Upload the contents of `module/prestashopstats/` to `/modules/prestashopstats/` on your server:
 - prestashopstats.php
 - config.xml  
 - index.php
@@ -107,28 +115,40 @@ After installation:
    - Geolocation Data
    - Traffic Analytics
 
-## 📊 Module Structure
+## 📊 Repository Structure
 
 ```
-prestashopstats/
-├── prestashopstats.php              # Main module class
-├── config.xml                        # Module configuration
-├── controllers/
-│   └── admin/
-│       └── AdminPrestaShopStatsController.php
-├── views/
-│   ├── templates/admin/
-│   │   ├── dashboard.tpl            # Main dashboard
-│   │   └── dashboard_widget.tpl     # Dashboard widget
-│   ├── css/
-│   │   └── admin.css                # Styling
-│   └── js/
-│       └── admin.js                 # JavaScript
-├── translations/
-│   └── en.php                        # Translations
-├── DOCUMENTATION.md                  # Full documentation
-├── INSTALLATION.md                   # Installation guide
-└── README.md                         # This file
+Prestashopstats/                         # Repository root
+├── module/                              # Module directory (ZIP this for installation)
+│   └── prestashopstats/                 # PrestaShop module
+│       ├── prestashopstats.php          # Main module class
+│       ├── config.xml                   # Module configuration
+│       ├── index.php                    # Security file
+│       ├── LICENSE                      # MIT License
+│       ├── controllers/
+│       │   └── admin/
+│       │       └── AdminPrestaShopStatsController.php
+│       ├── views/
+│       │   ├── templates/admin/
+│       │   │   ├── dashboard.tpl        # Main dashboard
+│       │   │   └── dashboard_widget.tpl # Dashboard widget
+│       │   ├── css/
+│       │   │   └── admin.css            # Styling
+│       │   └── js/
+│       │       └── admin.js             # JavaScript
+│       └── translations/
+│           └── en.php                   # Translations
+├── docs/                                # Additional documentation
+├── screenshots/                         # Screenshots directory
+├── build.sh                             # Build script
+├── README.md                            # This file
+├── INSTALLATION.md                      # Installation guide
+├── DOCUMENTATION.md                     # Full documentation
+├── QUICKSTART.md                        # Quick start guide
+├── FAQ.md                               # Frequently asked questions
+├── CONTRIBUTING.md                      # Contribution guidelines
+├── CHANGELOG.md                         # Version history
+└── LICENSE                              # Repository license
 ```
 
 ## 🌍 Multi-Language Support

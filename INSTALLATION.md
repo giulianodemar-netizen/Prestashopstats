@@ -15,9 +15,9 @@ Before installing the module, ensure your PrestaShop installation meets the foll
 
 ### Method 1: ZIP Upload (Recommended)
 
-**IMPORTANT:** PrestaShop requires a specific ZIP structure. Do not simply ZIP the repository root!
+With the new repository structure, installation is now much simpler!
 
-#### Option A: Use the Build Script (Easiest)
+#### Option A: Use the Build Script (Automated)
 
 1. **Run the build script** (Linux/Mac)
    ```bash
@@ -35,48 +35,48 @@ Before installing the module, ensure your PrestaShop installation meets the foll
    - Click **Upload**
    - The module will be automatically installed
 
-#### Option B: Manual ZIP Creation
+#### Option B: ZIP the Module Folder Directly (Simplest)
 
-1. **Create proper ZIP structure**
-   
-   The ZIP must contain a folder named `prestashopstats` with module files inside:
-   
-   ```
-   prestashopstats.zip
-     └── prestashopstats/
-         ├── prestashopstats.php
-         ├── config.xml
-         ├── index.php
-         ├── LICENSE
-         ├── controllers/
-         ├── views/
-         └── translations/
-   ```
-   
-   **DO NOT include these files in the ZIP:**
-   - README.md, DOCUMENTATION.md, and other markdown files
-   - composer.json (unless needed)
-   - screenshots/, docs/, build/, release/ folders
-   - .git/, .gitignore
+All module files are now organized in the `module/prestashopstats` directory.
 
-2. **Create ZIP manually** (Linux/Mac)
+1. **Create ZIP from module folder**
+   
+   **Linux/Mac:**
    ```bash
-   # From the repository root
-   mkdir -p /tmp/prestashopstats-build/prestashopstats
-   
-   # Copy only module files
-   cp prestashopstats.php /tmp/prestashopstats-build/prestashopstats/
-   cp config.xml /tmp/prestashopstats-build/prestashopstats/
-   cp index.php /tmp/prestashopstats-build/prestashopstats/
-   cp LICENSE /tmp/prestashopstats-build/prestashopstats/
-   cp -r controllers /tmp/prestashopstats-build/prestashopstats/
-   cp -r views /tmp/prestashopstats-build/prestashopstats/
-   cp -r translations /tmp/prestashopstats-build/prestashopstats/
-   
-   # Create ZIP
-   cd /tmp/prestashopstats-build
+   cd module
    zip -r prestashopstats.zip prestashopstats/
    ```
+   
+   **Windows:**
+   - Navigate to the `module` folder
+   - Right-click on `prestashopstats` folder
+   - Select "Send to" > "Compressed (zipped) folder"
+
+2. **Upload via Admin Panel**
+   - Log in to your PrestaShop admin panel
+   - Go to **Modules** > **Module Manager**
+   - Click **Upload a module** button
+   - Select the `prestashopstats.zip` file
+   - Click **Upload**
+   - The module will be automatically installed
+
+#### ZIP Structure
+
+The ZIP must contain a folder named `prestashopstats` with module files inside:
+
+```
+prestashopstats.zip
+  └── prestashopstats/
+      ├── prestashopstats.php
+      ├── config.xml
+      ├── index.php
+      ├── LICENSE
+      ├── controllers/
+      ├── views/
+      └── translations/
+```
+
+**Note:** The `module/prestashopstats` folder already has the correct structure!
 
 3. **Upload via Admin Panel**
    - Log in to your PrestaShop admin panel
@@ -88,24 +88,28 @@ Before installing the module, ensure your PrestaShop installation meets the foll
 
 ### Method 2: Direct FTP Upload
 
-1. **Prepare module files**
-   - Use the build script or manually copy only the necessary module files (as shown in Method 1)
-   - Do NOT upload documentation files like README.md, CHANGELOG.md, etc.
+1. **Locate module files**
+   - All module files are in the `module/prestashopstats` directory
 
 2. **Upload to PrestaShop**
    ```bash
    # Via FTP/SFTP
    - Connect to your server
    - Navigate to /modules/ directory
-   - Create a folder named 'prestashopstats'
-   - Upload ONLY these files/folders to /modules/prestashopstats/:
-     * prestashopstats.php
-     * config.xml
-     * index.php
-     * LICENSE
-     * controllers/
-     * views/
-     * translations/
+   - Upload the entire 'prestashopstats' folder from module/ directory
+   - Or create 'prestashopstats' folder and upload contents of module/prestashopstats/
+   ```
+   
+   The folder structure on your server should be:
+   ```
+   /modules/prestashopstats/
+   ├── prestashopstats.php
+   ├── config.xml
+   ├── index.php
+   ├── LICENSE
+   ├── controllers/
+   ├── views/
+   └── translations/
    ```
 
 3. **Set Permissions**
@@ -131,10 +135,14 @@ If you have SSH access:
 # Navigate to PrestaShop modules directory
 cd /path/to/prestashop/modules
 
-# Clone or copy the module
-git clone https://github.com/giulianodemar-netizen/Prestashopstats.git prestashopstats
-# OR
-cp -r /path/to/prestashopstats .
+# Clone the repository
+git clone https://github.com/giulianodemar-netizen/Prestashopstats.git temp_prestashopstats
+
+# Copy only the module directory
+cp -r temp_prestashopstats/module/prestashopstats .
+
+# Remove temporary directory
+rm -rf temp_prestashopstats
 
 # Set proper permissions
 chmod -R 755 prestashopstats
@@ -211,14 +219,21 @@ After installation, verify the following:
 
 **Solutions**:
 
-1. **Use the Build Script (Recommended)**
+1. **ZIP the Module Folder Directly (Simplest)**
+   ```bash
+   cd module
+   zip -r prestashopstats.zip prestashopstats/
+   ```
+   Upload `prestashopstats.zip` to PrestaShop
+
+2. **Use the Build Script**
    ```bash
    cd /path/to/Prestashopstats
    ./build.sh
    ```
    This creates a properly structured ZIP at `release/prestashopstats-v1.0.0.zip`
 
-2. **Check ZIP Structure**
+3. **Check ZIP Structure**
    The ZIP must have this exact structure:
    ```
    prestashopstats.zip
@@ -232,27 +247,18 @@ After installation, verify the following:
          └── translations/
    ```
    
+   **With the new repository structure, all module files are already in `module/prestashopstats/`!**
+   
    **Common Mistakes:**
-   - ❌ Documentation files (README.md, CHANGELOG.md, etc.) at module root
-   - ❌ Extra folders (docs/, screenshots/, build/, .git/)
-   - ❌ Files directly in ZIP root without prestashopstats/ folder
+   - ❌ ZIPing the entire repository root
    - ❌ Wrong folder name (Prestashopstats instead of prestashopstats)
+   - ❌ Files directly in ZIP root without prestashopstats/ folder
 
-3. **Verify ZIP Contents**
+4. **Verify ZIP Contents**
    ```bash
    unzip -l yourfile.zip | head -20
    ```
    First line should show: `prestashopstats/`
-
-4. **Create Clean ZIP Manually**
-   ```bash
-   # From repository root
-   mkdir -p /tmp/ps-build/prestashopstats
-   cp prestashopstats.php config.xml index.php LICENSE /tmp/ps-build/prestashopstats/
-   cp -r controllers views translations /tmp/ps-build/prestashopstats/
-   cd /tmp/ps-build
-   zip -r prestashopstats.zip prestashopstats/
-   ```
 
 5. **Check PrestaShop Logs**
    ```bash

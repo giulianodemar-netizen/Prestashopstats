@@ -1,0 +1,74 @@
+/**
+ * PrestaShop Statistics Module - Admin Styles
+ *
+ * @author    Giuliano De Mar
+ * @copyright Copyright (c) 2024
+ * @license   MIT License
+ */
+
+.prestashopstats-dashboard {
+    margin-top: 20px;
+}
+
+.prestashopstats-dashboard .stats-value {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.prestashopstats-dashboard .alert {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.prestashopstats-dashboard .alert h4 {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.prestashopstats-dashboard .panel {
+    margin-bottom: 20px;
+}
+
+.prestashopstats-dashboard .table {
+    margin-bottom: 0;
+}
+
+.prestashopstats-dashboard .table thead {
+    background-color: #f5f5f5;
+}
+
+.prestashopstats-dashboard .table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+.prestashopstats-dashboard .form-inline .form-group {
+    margin-right: 10px;
+}
+
+.prestashopstats-dashboard h3 {
+    color: #363a41;
+    border-bottom: 2px solid #00aff0;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.prestashopstats-widget {
+    margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .prestashopstats-dashboard .stats-value {
+        font-size: 1.5em;
+    }
+    
+    .prestashopstats-dashboard .form-inline .form-group {
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .prestashopstats-dashboard .pull-right {
+        float: none !important;
+    }
+}

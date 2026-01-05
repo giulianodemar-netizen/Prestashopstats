@@ -1,0 +1,201 @@
+{*
+* Customers Statistics Tab
+*}
+
+{if isset($stats.customers)}
+<div class="row">
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <i class="icon-group"></i> {l s='Total Active Customers' mod='prestashopstats'}
+            </div>
+            <div class="panel-body text-center">
+                <h2>{$stats.customers.total_customers|escape:'html':'UTF-8'}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <i class="icon-user"></i> {l s='New Customers' mod='prestashopstats'}
+            </div>
+            <div class="panel-body text-center">
+                <h2>{$stats.customers.new_customers|escape:'html':'UTF-8'}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <i class="icon-signal"></i> {l s='Growth Rate' mod='prestashopstats'}
+            </div>
+            <div class="panel-body text-center">
+                <h2>
+                    {if $stats.customers.total_customers > 0}
+                        {($stats.customers.new_customers / $stats.customers.total_customers * 100)|string_format:"%.1f"}%
+                    {else}
+                        0%
+                    {/if}
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {if isset($stats.customers.by_country) && count($stats.customers.by_country) > 0}
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-heading">
+                <i class="icon-globe"></i> {l s='Top' mod='prestashopstats'} {$limit} {l s='Countries by Customer Count' mod='prestashopstats'}
+            </div>
+            <div class="panel-body">
+                <canvas id="customersByCountryChart" height="120"></canvas>
+                <div style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>{l s='Country' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Customer Count' mod='prestashopstats'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {foreach from=$stats.customers.by_country item=country name=countryLoop}
+                            <tr>
+                                <td>{$smarty.foreach.countryLoop.iteration}</td>
+                                <td>{$country.country_name|escape:'html':'UTF-8'}</td>
+                                <td class="text-right"><strong>{$country.customer_count|escape:'html':'UTF-8'}</strong></td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+    
+    {if isset($stats.customers.purchase_frequency) && count($stats.customers.purchase_frequency) > 0}
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-heading">
+                <i class="icon-repeat"></i> {l s='Purchase Frequency Distribution' mod='prestashopstats'}
+            </div>
+            <div class="panel-body">
+                <canvas id="purchaseFrequencyChart" height="120"></canvas>
+                <div style="margin-top: 20px;">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>{l s='Frequency' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Customer Count' mod='prestashopstats'}</th>
+                                <th class="text-right">{l s='Percentage' mod='prestashopstats'}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {assign var="total_freq_customers" value=0}
+                            {foreach from=$stats.customers.purchase_frequency item=freq}
+                                {assign var="total_freq_customers" value=$total_freq_customers+$freq.customer_count}
+                            {/foreach}
+                            {foreach from=$stats.customers.purchase_frequency item=freq}
+                            <tr>
+                                <td>{$freq.frequency_group|escape:'html':'UTF-8'}</td>
+                                <td class="text-right"><strong>{$freq.customer_count|escape:'html':'UTF-8'}</strong></td>
+                                <td class="text-right">
+                                    {if $total_freq_customers > 0}
+                                        {($freq.customer_count / $total_freq_customers * 100)|string_format:"%.1f"}%
+                                    {else}
+                                        0%
+                                    {/if}
+                                </td>
+                            </tr>
+                            {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/if}
+</div>
+
+<script>
+{if isset($stats.customers.by_country) && count($stats.customers.by_country) > 0}
+// Customers by Country Chart
+var countryNames = [];
+var countryCustomers = [];
+{foreach from=$stats.customers.by_country item=country name=countryChartLoop}
+    {if $smarty.foreach.countryChartLoop.index < 10}
+    countryNames.push('{$country.country_name|escape:'javascript':'UTF-8'}');
+    countryCustomers.push({$country.customer_count});
+    {/if}
+{/foreach}
+
+var ctx1 = document.getElementById('customersByCountryChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: countryNames,
+        datasets: [{
+            label: 'Customers',
+            data: countryCustomers,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+{/if}
+
+{if isset($stats.customers.purchase_frequency) && count($stats.customers.purchase_frequency) > 0}
+// Purchase Frequency Chart
+var freqLabels = [];
+var freqCounts = [];
+{foreach from=$stats.customers.purchase_frequency item=freq}
+    freqLabels.push('{$freq.frequency_group|escape:'javascript':'UTF-8'}');
+    freqCounts.push({$freq.customer_count});
+{/foreach}
+
+var ctx2 = document.getElementById('purchaseFrequencyChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'pie',
+    data: {
+        labels: freqLabels,
+        datasets: [{
+            data: freqCounts,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+{/if}
+</script>
+{/if}

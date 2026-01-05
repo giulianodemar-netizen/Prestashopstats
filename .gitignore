@@ -1,0 +1,57 @@
+# PrestaShop Module .gitignore
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Module logo (if you want to add it locally)
+# logo.png
+
+# Temporary files
+*.tmp
+*.bak
+*.log
+.cache/
+
+# Build and package files
+*.zip
+dist/
+build/
+release/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Node modules (if using npm for development)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Composer
+vendor/
+composer.lock
+
+# Testing
+phpunit.xml
+.phpunit.result.cache
+tests/_output/
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Translation cache
+translations/*.cache
